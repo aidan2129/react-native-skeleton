@@ -1,5 +1,5 @@
-import React from 'react';
-import {StyleSheet, useColorScheme} from 'react-native';
+import React, {useEffect} from 'react';
+import {useColorScheme, Dimensions} from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {NavigationContainer} from '@react-navigation/native';
@@ -7,51 +7,35 @@ import {NavigationContainer} from '@react-navigation/native';
 import TabBarSkeleton from './src/components/tabBar';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
-
-import HomeScreen from './src/screens/home/home';
-import ShopScreen from './src/screens/shops/shops';
-import WalletScreen from './src/screens/wallet/wallet';
+import ChatScreen from './src/screens/chat/chat';
+import ShopScreen from './src/screens/practices/practices';
+import CalendarScreen from './src/screens/calendar/calendar';
 import SettingsScreen from './src/screens/settings/settings';
-
 const Tab = createBottomTabNavigator();
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const [key, setKey] = React.useState(0);
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', () => {
+      setKey(key + 1);
+    });
+    return () => subscription?.remove();
+  });
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
   return (
-    <NavigationContainer>
-      <Tab.Navigator     
-      tabBar={props => <TabBarSkeleton {...props} />}>
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Shops" component={ShopScreen} />
-        <Tab.Screen name="Wallet" component={WalletScreen} />
-        <Tab.Screen name="More" component={SettingsScreen} />
+    <NavigationContainer key={key}>
+      <Tab.Navigator tabBar={props => <TabBarSkeleton {...props} />}>
+        <Tab.Screen name="Calendar" component={CalendarScreen} />
+        <Tab.Screen name="Chat" component={ChatScreen} />
+        <Tab.Screen name="Practices" component={ShopScreen} />
+        <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
 export default App;
